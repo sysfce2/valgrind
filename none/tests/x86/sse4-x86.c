@@ -166,6 +166,10 @@ int main(void)
    test_PCMPEQQ();
    test_MPSADBW();
    test_MOVNTDQA();
+   test_ROUNDSD_w_immediate_rounding();
+   test_ROUNDSS_w_immediate_rounding();
+   test_ROUNDSD_w_mxcsr_rounding();
+   test_ROUNDSS_w_mxcsr_rounding();
 
    return 0;
 }

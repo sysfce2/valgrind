@@ -13408,10 +13408,7 @@ DisResult disInstr_X86_WRK (
    }
 
    /* 66 0F 3A 0B /r ib = ROUNDSD imm8, xmm2/m64, xmm1
-      (Partial implementation only -- only deal with cases where
-      the rounding mode is specified directly by the immediate byte.)
       66 0F 3A 0A /r ib = ROUNDSS imm8, xmm2/m32, xmm1
-      (Limitations ditto)
    */
    if (sz == 2 
        && insn[0] == 0x0F && insn[1] == 0x3A
@@ -13429,7 +13426,7 @@ DisResult disInstr_X86_WRK (
                  isD ? getXMMRegLane64F( eregOfRM(modrm), 0 )
                      : getXMMRegLane32F( eregOfRM(modrm), 0 ) );
          imm = insn[3+1];
-         if (imm & ~3) goto decode_failure;
+         if (imm & ~15) goto decode_failure;
          delta += 3+1+1;
          DIP( "rounds%c $%d,%s,%s\n",
               isD ? 'd' : 's',
@@ -13439,7 +13436,7 @@ DisResult disInstr_X86_WRK (
          addr = disAMode( &alen, sorb, delta+3, dis_buf );
          assign( src, loadLE( isD ? Ity_F64 : Ity_F32, mkexpr(addr) ));
          imm = insn[3+alen];
-         if (imm & ~3) goto decode_failure;
+         if (imm & ~15) goto decode_failure;
          delta += 3+alen+1;
          DIP( "roundsd $%d,%s,%s\n",
               imm, dis_buf, nameXMMReg( gregOfRM(modrm) ) );
@@ -13450,7 +13447,9 @@ DisResult disInstr_X86_WRK (
          we can use that value directly in the IR as a rounding
          mode. */
       assign(res, binop(isD ? Iop_RoundF64toInt : Iop_RoundF32toInt,
-                  mkU32(imm & 3), mkexpr(src)) );
+                        (imm & 4) ? get_sse_roundingmode()
+                                  : mkU32(imm & 3),
+                        mkexpr(src)) );
 
       if (isD)
          putXMMRegLane64F( gregOfRM(modrm), 0, mkexpr(res) );
