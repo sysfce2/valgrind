@@ -5982,10 +5982,9 @@ CFLAGS=$safe_CFLAGS
 # Ok.  We're done checking.
 #----------------------------------------------------------------------------
 
-# Nb: VEX/Makefile is generated from Makefile.vex.in.
 AC_CONFIG_FILES([
    Makefile 
-   VEX/Makefile:Makefile.vex.in
+   VEX/Makefile
    valgrind.spec
    valgrind.pc
    glibc-2.X.supp

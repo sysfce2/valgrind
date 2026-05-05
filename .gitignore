@@ -26,7 +26,6 @@
 /lib
 /Makefile
 /Makefile.in
-/Makefile.vex.in
 /missing
 /mkinstalldirs
 /share
